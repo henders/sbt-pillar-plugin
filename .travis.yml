@@ -17,6 +17,4 @@ cache:
     - $HOME/.sbt/boot/
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION clean coverage compile test
-  - sbt ++$TRAVIS_SCALA_VERSION coverageReport
-  - sbt ++$TRAVIS_SCALA_VERSION codacyCoverage
+  - sbt ++$TRAVIS_SCALA_VERSION clean coverage compile test coverageReport codacyCoverage
