@@ -1,12 +1,15 @@
 language: scala
 
+scala:
+  - 2.10.4
+
+jdk:
+  - oraclejdk8
+
 sudo: false
 
 services:
   - cassandra
-
-scala:
-  - 2.10.4
 
 cache:
   directories:
