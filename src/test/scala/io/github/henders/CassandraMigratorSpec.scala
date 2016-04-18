@@ -35,7 +35,7 @@ class CassandraMigratorSpec extends FunSpec with MockitoSugar with Matchers with
   }
 
   def keyspaces = {
-//    val keyspaces = migrator.session.execute(s"SELECT keyspace_name FROM system_schema.keyspaces") // cassandra v3+
+//  val keyspaces = migrator.session.execute(s"SELECT keyspace_name FROM system_schema.keyspaces") // cassandra v3+
     val keyspaces = migrator.session.execute(s"SELECT keyspace_name FROM system.schema_keyspaces")   // cassandra v2.x
     keyspaces.all.toList.map(_.getString(0))
   }
@@ -48,5 +48,4 @@ class CassandraMigratorSpec extends FunSpec with MockitoSugar with Matchers with
     }
     new java.io.File(url.toURI)
   }
-
 }
