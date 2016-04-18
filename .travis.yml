@@ -2,6 +2,9 @@ language: scala
 
 sudo: false
 
+services:
+  - cassandra
+
 scala:
   - 2.10.4
 
