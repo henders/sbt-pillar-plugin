@@ -1,5 +1,7 @@
 sbtPlugin := true
 
+coverageHighlighting := false
+
 name := "sbt-pillar"
 organization := "io.github.henders"
 description := "A wrapper over the Pillar library to manage Cassandra migrations (https://github.com/comeara/pillar)"
