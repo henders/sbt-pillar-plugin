@@ -8,11 +8,11 @@ import sbt.{Logger, _}
 import scala.util.Try
 
 class CassandraMigrator(configFile: File, migrationsDir: File, logger: Logger) {
-  private val DEFAULT_DEFAULT_CONSISTENCY_LEVEL = ConsistencyLevel.QUORUM
-  private val DEFAULT_REPLICATION_STRATEGY = "SimpleStrategy"
-  private val DEFAULT_REPLICATION_FACTOR = 3
-  private val DEFAULT_USERNAME = "cassandra"
-  private val DEFAULT_PASSWORD = "cassandra"
+  private val DefaultConsistencyLevel = ConsistencyLevel.QUORUM
+  private val DefaultReplicationStrategy = "SimpleStrategy"
+  private val DefaultReplicationFactor = 3
+  private val DefaultUsername = "cassandra"
+  private val DefaultPassword = "cassandra"
 
   val env = sys.props.getOrElse("SCALA_ENV", sys.env.getOrElse("SCALA_ENV", "development"))
   logger.info(s"Loading config file: $configFile for environment: $env")
@@ -21,12 +21,12 @@ class CassandraMigrator(configFile: File, migrationsDir: File, logger: Logger) {
   val hosts = cassandraConfig.getString("hosts").split(',')
   val keyspace = cassandraConfig.getString("keyspace")
   val port = cassandraConfig.getInt("port")
-  val replicationStrategy = Try(cassandraConfig.getString("replicationStrategy")).getOrElse(DEFAULT_REPLICATION_STRATEGY)
-  val replicationFactor = Try(cassandraConfig.getString("replicationFactor")).getOrElse(DEFAULT_REPLICATION_FACTOR)
+  val replicationStrategy = Try(cassandraConfig.getString("replicationStrategy")).getOrElse(DefaultReplicationStrategy)
+  val replicationFactor = Try(cassandraConfig.getString("replicationFactor")).getOrElse(DefaultReplicationFactor)
   val defaultConsistencyLevel = Try(ConsistencyLevel.valueOf(cassandraConfig.getString("defaultConsistencyLevel")))
-    .getOrElse(DEFAULT_DEFAULT_CONSISTENCY_LEVEL)
-  val username = Try(cassandraConfig.getString("username")).getOrElse(DEFAULT_USERNAME)
-  val password = Try(cassandraConfig.getString("password")).getOrElse(DEFAULT_PASSWORD)
+    .getOrElse(DefaultConsistencyLevel)
+  val username = Try(cassandraConfig.getString("username")).getOrElse(DefaultUsername)
+  val password = Try(cassandraConfig.getString("password")).getOrElse(DefaultPassword)
   val session = createSession
 
   def createKeyspace = {
