@@ -5,7 +5,6 @@ coverageHighlighting := false
 name := "sbt-pillar"
 organization := "io.github.henders"
 description := "A wrapper over the Pillar library to manage Cassandra migrations (https://github.com/comeara/pillar)"
-version := "0.1.6"
 homepage := Some(url("https://github.com/henders/sbt-pillar-plugin"))
 
 licenses += ("MIT", url("https://opensource.org/licenses/MIT"))
