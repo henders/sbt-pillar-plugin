@@ -16,5 +16,8 @@ cache:
     - $HOME/.ivy2/cache
     - $HOME/.sbt/boot/
 
+env:
+  - SCALA_ENV=travis
+
 script:
   - sbt ++$TRAVIS_SCALA_VERSION clean coverage compile test coverageReport codacyCoverage
