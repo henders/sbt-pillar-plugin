@@ -49,7 +49,7 @@ class CassandraMigratorSpec extends FunSpec with MockitoSugar with Matchers with
     val keyspaces = try {
       migrator.session.execute(s"SELECT keyspace_name FROM system.schema_keyspaces") // cassandra v2.x
     } catch {
-      case _: Throwable => migrator.session.execute(s"SELECT keyspace_name FROM system_schema.keyspaces") // cassandra v3+
+      case NonFatal(e) => migrator.session.execute(s"SELECT keyspace_name FROM system_schema.keyspaces") // cassandra v3+
     }
     keyspaces.all.toList.map(_.getString(0))
   }
@@ -58,7 +58,7 @@ class CassandraMigratorSpec extends FunSpec with MockitoSugar with Matchers with
   private def getResourceFile(fileName: String): java.io.File = {
     val url = Option(getClass.getClassLoader.getResource(fileName)) match {
       case Some(x) => x
-      case NonFatal(e) => ClassLoader.getSystemClassLoader.getResource(fileName)
+      case _ => ClassLoader.getSystemClassLoader.getResource(fileName)
     }
     new java.io.File(url.toURI)
   }
