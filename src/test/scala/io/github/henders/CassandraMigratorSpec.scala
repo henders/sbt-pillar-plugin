@@ -7,6 +7,7 @@ import org.scalatest.{BeforeAndAfterAll, FunSpec, Matchers}
 import sbt._
 
 import scala.collection.JavaConversions._
+import scala.util.control.NonFatal
 
 class CassandraMigratorSpec extends FunSpec with MockitoSugar with Matchers with BeforeAndAfterAll {
   val logger = mock[Logger]
@@ -57,7 +58,7 @@ class CassandraMigratorSpec extends FunSpec with MockitoSugar with Matchers with
   private def getResourceFile(fileName: String): java.io.File = {
     val url = Option(getClass.getClassLoader.getResource(fileName)) match {
       case Some(x) => x
-      case _ => ClassLoader.getSystemClassLoader.getResource(fileName)
+      case NonFatal(e) => ClassLoader.getSystemClassLoader.getResource(fileName)
     }
     new java.io.File(url.toURI)
   }
