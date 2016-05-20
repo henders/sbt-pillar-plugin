@@ -32,6 +32,14 @@ object PillarPlugin extends AutoPlugin {
     // Need to declare this task inline because I can't figure out why it won't work as a Dyn.inputTask object
     createMigration := {
       val args: Seq[String] = spaceDelimited("<arg>").parsed
+      val migrationName = args.headOption.getOrElse("")
+
+      if (migrationName.isEmpty) {
+        streams.value.log.error("You should call this with an argument, e.g.: $ sbt 'createMigration my_table'")
+        // Workaround for SBT bug where this task is called multiple times from single invocation
+        System.exit(1)
+      }
+
       streams.value.log.info(s"Creating migration for '${args.head}'....")
       new CassandraMigrator(pillarConfigFile.value, pillarMigrationsDir.value, streams.value.log).createMigration(args.head)
       // Workaround for SBT bug where this task is called multiple times from single invocation
