@@ -40,8 +40,8 @@ object PillarPlugin extends AutoPlugin {
         System.exit(1)
       }
 
-      streams.value.log.info(s"Creating migration for '${args.head}'....")
-      new CassandraMigrator(pillarConfigFile.value, pillarMigrationsDir.value, streams.value.log).createMigration(args.head)
+      streams.value.log.info(s"Creating migration for '${migrationName}'....")
+      new CassandraMigrator(pillarConfigFile.value, pillarMigrationsDir.value, streams.value.log).createMigration(migrationName)
       // Workaround for SBT bug where this task is called multiple times from single invocation
       System.exit(0)
     }
