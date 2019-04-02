@@ -14,12 +14,13 @@ bintrayOrganization := None
 bintrayPackageLabels := Seq("sbt", "sbt-plugin", "pillar")
 publishArtifact in Test := false
 pomIncludeRepository := { _ => false}
+scalaVersion := "2.12.8"
 
 libraryDependencies ++= Seq(
-  "de.kaufhof" %% "pillar" % "3.1.0",
+  "de.kaufhof" %% "pillar" % "4.1.2",
   "com.datastax.cassandra" % "cassandra-driver-core" % "3.0.0",
-  "org.scalactic" %% "scalactic" % "2.2.6",
-  "org.scalatest" %% "scalatest" % "2.2.6" % "test",
+  "org.scalactic" %% "scalactic" % "3.0.6",
+  "org.scalatest" %% "scalatest" % "3.0.6" % "test",
   "org.mockito" % "mockito-core" % "1.10.19" % "test",
   "com.typesafe" % "config" % "1.3.0"
 )

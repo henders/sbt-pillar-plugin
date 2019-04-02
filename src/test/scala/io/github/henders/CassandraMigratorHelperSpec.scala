@@ -2,18 +2,18 @@ package io.github.henders
 
 import java.nio.file.Files
 
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, FunSpec, Matchers}
 import sbt._
 
 import scala.collection.JavaConversions._
 import scala.util.control.NonFatal
 
-class CassandraMigratorSpec extends FunSpec with MockitoSugar with Matchers with BeforeAndAfterAll {
+class CassandraMigratorHelperSpec extends FunSpec with MockitoSugar with Matchers with BeforeAndAfterAll {
   val logger = mock[Logger]
   val confFile = getResourceFile("test.conf")
   val migrationDir = Files.createTempDirectory("pillar")
-  val migrator = new CassandraMigrator(confFile, migrationDir.toFile, logger)
+  val migrator = new CassandraMigratorHelper(confFile, migrationDir.toFile, logger)
 
   override def beforeAll = {
     super.beforeAll

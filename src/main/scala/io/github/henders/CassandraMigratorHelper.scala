@@ -7,13 +7,13 @@ import java.time.format.DateTimeFormatter
 import com.datastax.driver.core.exceptions.InvalidQueryException
 import com.datastax.driver.core.{Cluster, ConsistencyLevel, QueryOptions}
 import com.typesafe.config.ConfigFactory
-import de.kaufhof.pillar.{Migrator, Registry, ReplicationOptions}
+import de.kaufhof.pillar._
 import sbt.{Logger, _}
 
 import scala.util.Try
 
-class CassandraMigrator(configFile: File, migrationsDir: File, logger: Logger) {
-  val env = sys.props.getOrElse("SCALA_ENV", sys.env.getOrElse("SCALA_ENV", "development"))
+class CassandraMigratorHelper(configFile: File, migrationsDir: File, logger: Logger) {
+  val env = sys.props.getOrElse("SCALA_ENV", sys.env.getOrElse("SCALA_ENV", "test"))
   logger.info(s"Loading config file: $configFile for environment: $env")
   val config = ConfigFactory.parseFile(configFile).resolve().getConfig(env)
   val cassandraConfig = config.getConfig("cassandra")
@@ -21,26 +21,27 @@ class CassandraMigrator(configFile: File, migrationsDir: File, logger: Logger) {
   val keyspace = cassandraConfig.getString("keyspace")
   val port = cassandraConfig.getInt("port")
   val replicationStrategy = Try(cassandraConfig.getString("replicationStrategy"))
-    .getOrElse(CassandraMigrator.DefaultReplicationStrategy)
-  val replicationFactor = Try(cassandraConfig.getString("replicationFactor"))
-    .getOrElse(CassandraMigrator.DefaultReplicationFactor)
+    .getOrElse(CassandraMigratorHelper.DefaultReplicationStrategy)
+  val replicationFactor = Try(cassandraConfig.getInt("replicationFactor"))
+    .getOrElse(CassandraMigratorHelper.DefaultReplicationFactor)
   val defaultConsistencyLevel = Try(ConsistencyLevel.valueOf(cassandraConfig.getString("defaultConsistencyLevel")))
-    .getOrElse(CassandraMigrator.DefaultConsistencyLevel)
-  val username = Try(cassandraConfig.getString("username")).getOrElse(CassandraMigrator.DefaultUsername)
-  val password = Try(cassandraConfig.getString("password")).getOrElse(CassandraMigrator.DefaultPassword)
+    .getOrElse(CassandraMigratorHelper.DefaultConsistencyLevel)
+  val username = Try(cassandraConfig.getString("username")).getOrElse(CassandraMigratorHelper.DefaultUsername)
+  val password = Try(cassandraConfig.getString("password")).getOrElse(CassandraMigratorHelper.DefaultPassword)
   val session = createSession
 
   def createKeyspace = {
     logger.info(s"Creating keyspace $keyspace at ${hosts(0)}:$port")
-    Migrator(Registry(Seq.empty))
-      .initialize(session, keyspace, new ReplicationOptions(Map("class" -> replicationStrategy, "replication_factor" -> replicationFactor)))
+    val migrator = new CassandraMigrator(Registry(Seq.empty), "applied_migrations")
+    migrator.initialize(session, keyspace, SimpleStrategy(replicationFactor))
     this
   }
 
   def dropKeyspace = {
     logger.info(s"Dropping keyspace $keyspace at ${hosts(0)}:$port")
     try {
-      Migrator(Registry(Seq.empty)).destroy(session, keyspace)
+      val migrator = new CassandraMigrator(Registry(Seq.empty), "applied_migrations")
+      migrator.destroy(session, keyspace)
     } catch {
       case e: InvalidQueryException => logger.warn(s"Failed to drop keyspace ($keyspace) - ${e.getMessage}")
     }
@@ -51,7 +52,8 @@ class CassandraMigrator(configFile: File, migrationsDir: File, logger: Logger) {
     val registry = Registry.fromDirectory(migrationsDir)
     logger.info(s"Migrating keyspace $keyspace at ${hosts(0)}:$port")
     session.execute(s"USE $keyspace")
-    Migrator(registry).migrate(session)
+    val migrator = new CassandraMigrator(registry, "applied_migrations")
+    migrator.migrate(session)
     this
   }
 
@@ -94,7 +96,7 @@ class CassandraMigrator(configFile: File, migrationsDir: File, logger: Logger) {
   }
 }
 
-object CassandraMigrator {
+object CassandraMigratorHelper {
   val DefaultConsistencyLevel = ConsistencyLevel.QUORUM
   val DefaultReplicationStrategy = "SimpleStrategy"
   val DefaultReplicationFactor = 3

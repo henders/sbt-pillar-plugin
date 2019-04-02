@@ -41,26 +41,26 @@ object PillarPlugin extends AutoPlugin {
       }
 
       streams.value.log.info(s"Creating migration for '${migrationName}'....")
-      new CassandraMigrator(pillarConfigFile.value, pillarMigrationsDir.value, streams.value.log).createMigration(migrationName)
+      new CassandraMigratorHelper(pillarConfigFile.value, pillarMigrationsDir.value, streams.value.log).createMigration(migrationName)
       // Workaround for SBT bug where this task is called multiple times from single invocation
       System.exit(0)
     }
   )
 
   lazy val createKeyspaceTask = Def.task {
-    new CassandraMigrator(pillarConfigFile.value, pillarMigrationsDir.value, streams.value.log).createKeyspace
+    new CassandraMigratorHelper(pillarConfigFile.value, pillarMigrationsDir.value, streams.value.log).createKeyspace
   }
 
   lazy val dropKeyspaceTask = Def.task {
-    new CassandraMigrator(pillarConfigFile.value, pillarMigrationsDir.value, streams.value.log).dropKeyspace
+    new CassandraMigratorHelper(pillarConfigFile.value, pillarMigrationsDir.value, streams.value.log).dropKeyspace
   }
 
   lazy val migrateTask = Def.task {
-    new CassandraMigrator(pillarConfigFile.value, pillarMigrationsDir.value, streams.value.log).migrate
+    new CassandraMigratorHelper(pillarConfigFile.value, pillarMigrationsDir.value, streams.value.log).migrate
   }
 
   lazy val cleanMigrateTask = Def.task {
-    new CassandraMigrator(pillarConfigFile.value, pillarMigrationsDir.value, streams.value.log)
+    new CassandraMigratorHelper(pillarConfigFile.value, pillarMigrationsDir.value, streams.value.log)
       .dropKeyspace
       .createKeyspace
       .migrate
